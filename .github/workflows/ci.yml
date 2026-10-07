@@ -1,0 +1,26 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  phase0-contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify required design contracts
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s README.md
+          test -s docs/DESIGN.md
+          test -s docs/FAILURE_TESTS.md
+          test -s docs/WORK_STATE.md
+          test -s docs/adr/001-agent-outside-trust-boundary.md
+          test -s docs/adr/002-forward-operator-identity.md
+          test -s docs/adr/003-approval-execution-transaction.md
+          grep -q "crossScopeCustomerDataNeverReachesLlmPrompt" docs/FAILURE_TESTS.md
+          grep -q "maliciousAgentCannotEscalateBeyondCoreBoundary" docs/FAILURE_TESTS.md
+          grep -q "twentyConcurrentApprovalsExecuteExactlyOnce" docs/FAILURE_TESTS.md
